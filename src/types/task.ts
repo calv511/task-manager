@@ -7,3 +7,5 @@ export interface Task {
     status: "To Do" | "In Progress" | "Completed";
     priority: TaskPriority;
 }
+
+export type NewTask = Omit<Task, 'id'>;
