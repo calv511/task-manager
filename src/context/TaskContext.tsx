@@ -40,9 +40,7 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
                     task.id === id ? { ...task, ...updates } : task
                 )
             );
-        };
-        
-   
+        }; 
 
     const deleteTask = (id: number) => {
         setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
