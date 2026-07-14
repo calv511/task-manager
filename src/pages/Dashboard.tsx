@@ -61,6 +61,14 @@ function Dashboard() {
         cancelEditingTask();
     };
 
+    const shouldIgnoreCardInteraction = (target: EventTarget | null) => {
+        if (!(target instanceof Element)) {
+            return false;
+        }
+
+        return Boolean(target.closest("button, a, input, select, textarea, label"));
+    };
+
     const closeTaskDetails = useCallback(() => {
         setFocusedTaskId(null);
         cancelEditingTask();
@@ -148,8 +156,18 @@ function Dashboard() {
                                 className="task-card card border-0 shadow-sm"
                                 role="button"
                                 tabIndex={0}
-                                onClick={() => openTaskDetails(task.id)}
+                                onClick={(event) => {
+                                    if (shouldIgnoreCardInteraction(event.target)) {
+                                        return;
+                                    }
+
+                                    openTaskDetails(task.id);
+                                }}
                                 onKeyDown={(event) => {
+                                    if (shouldIgnoreCardInteraction(event.target)) {
+                                        return;
+                                    }
+
                                     if (event.key === "Enter" || event.key === " ") {
                                         event.preventDefault();
                                         openTaskDetails(task.id);
@@ -160,7 +178,7 @@ function Dashboard() {
                                     <div className="d-flex justify-content-between align-items-start gap-3 mb-3">
                                         <div>
                                             {editingTaskId === task.id ? (
-                                                    <div className="d-grid gap-3" onClickCapture={(event) => event.stopPropagation()}>
+                                                <div className="d-grid gap-3">
                                                     <div>
                                                         <label className="form-label" htmlFor={`edit-title-${task.id}`}>Title</label>
                                                         <input
@@ -238,7 +256,7 @@ function Dashboard() {
                                                 </>
                                             )}
                                         </div>
-                                        <div className="d-flex flex-column gap-2 align-items-end" onClickCapture={(event) => event.stopPropagation()}>
+                                        <div className="d-flex flex-column gap-2 align-items-end">
                                             {editingTaskId === task.id ? (
                                                 <>
                                                     <button
