@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTasks } from "../context/TaskContext";
 import type { TaskPriority, TaskStatus } from "../types/task";
 
@@ -10,8 +10,13 @@ function Dashboard() {
     const [editDescription, setEditDescription] = useState("");
     const [editPriority, setEditPriority] = useState<TaskPriority>("Medium");
     const [editStatus, setEditStatus] = useState<TaskStatus>("To Do");
+    const [focusedTaskId, setFocusedTaskId] = useState<number | null>(null);
     const filteredTasks = tasks.filter(
         task => filter === "All" || task.status === filter
+    );
+    const focusedTask = useMemo(
+        () => tasks.find((task) => task.id === focusedTaskId) ?? null,
+        [tasks, focusedTaskId],
     );
 
     const filterOptions = ["All", "To Do", "In Progress", "Completed"];
@@ -36,13 +41,35 @@ function Dashboard() {
         setEditStatus(taskToEdit.status);
     };
 
-    const cancelEditingTask = () => {
+    const cancelEditingTask = useCallback(() => {
         setEditingTaskId(null);
         setEditTitle("");
         setEditDescription("");
         setEditPriority("Medium");
         setEditStatus("To Do");
+    }, []);
+
+    const openTaskDetails = (taskId: number) => {
+        setFocusedTaskId(taskId);
+        cancelEditingTask();
     };
+
+    const closeTaskDetails = useCallback(() => {
+        setFocusedTaskId(null);
+        cancelEditingTask();
+    }, [cancelEditingTask]);
+
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                closeTaskDetails();
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [closeTaskDetails]);
 
     const saveTaskEdits = (taskId: number) => {
         updateTask(taskId, {
@@ -91,12 +118,24 @@ function Dashboard() {
                 ) : (
                     <div className="task-grid">
                         {filteredTasks.map(task => (
-                            <article key={task.id} className="task-card card border-0 shadow-sm">
+                            <article
+                                key={task.id}
+                                className="task-card card border-0 shadow-sm"
+                                role="button"
+                                tabIndex={0}
+                                onClick={() => openTaskDetails(task.id)}
+                                onKeyDown={(event) => {
+                                    if (event.key === "Enter" || event.key === " ") {
+                                        event.preventDefault();
+                                        openTaskDetails(task.id);
+                                    }
+                                }}
+                            >
                                 <div className="card-body p-4">
                                     <div className="d-flex justify-content-between align-items-start gap-3 mb-3">
                                         <div>
                                             {editingTaskId === task.id ? (
-                                                <div className="d-grid gap-3">
+                                                <div className="d-grid gap-3" onClickCapture={(event) => event.stopPropagation()}>
                                                     <div>
                                                         <label className="form-label" htmlFor={`edit-title-${task.id}`}>Title</label>
                                                         <input
@@ -150,7 +189,7 @@ function Dashboard() {
                                                 </>
                                             )}
                                         </div>
-                                        <div className="d-flex flex-column gap-2 align-items-end">
+                                        <div className="d-flex flex-column gap-2 align-items-end" onClickCapture={(event) => event.stopPropagation()}>
                                             {editingTaskId === task.id ? (
                                                 <>
                                                     <button
@@ -226,6 +265,149 @@ function Dashboard() {
                     </div>
                 )}
             </div>
+
+            {focusedTask ? (
+                <div className="task-modal-backdrop" role="presentation" onClick={closeTaskDetails}>
+                    <div
+                        className="task-modal card border-0 shadow-lg"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby={`task-modal-title-${focusedTask.id}`}
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <div className="card-body p-4 p-md-5">
+                            <div className="d-flex justify-content-between align-items-start gap-3 mb-4">
+                                <div>
+                                    <p className="section-label mb-2">Task details</p>
+                                    <h3 className="h3 fw-semibold mb-2" id={`task-modal-title-${focusedTask.id}`}>{focusedTask.title}</h3>
+                                    <p className="text-body-secondary mb-0">Click outside the panel, press Escape, or use the X button to close.</p>
+                                </div>
+                                <button
+                                    type="button"
+                                    className="btn-close"
+                                    aria-label="Close task details"
+                                    onClick={closeTaskDetails}
+                                />
+                            </div>
+
+                            {editingTaskId === focusedTask.id ? (
+                                <div className="d-grid gap-3">
+                                    <div>
+                                        <label className="form-label" htmlFor={`modal-title-${focusedTask.id}`}>Title</label>
+                                        <input
+                                            id={`modal-title-${focusedTask.id}`}
+                                            className="form-control"
+                                            value={editTitle}
+                                            onChange={(e) => setEditTitle(e.target.value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="form-label" htmlFor={`modal-description-${focusedTask.id}`}>Description</label>
+                                        <textarea
+                                            id={`modal-description-${focusedTask.id}`}
+                                            className="form-control"
+                                            rows={4}
+                                            value={editDescription}
+                                            onChange={(e) => setEditDescription(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="row g-3">
+                                        <div className="col-12 col-md-6">
+                                            <label className="form-label" htmlFor={`modal-priority-${focusedTask.id}`}>Priority</label>
+                                            <select
+                                                id={`modal-priority-${focusedTask.id}`}
+                                                className="form-select"
+                                                value={editPriority}
+                                                onChange={(e) => setEditPriority(e.target.value as TaskPriority)}
+                                            >
+                                                <option value="Low">Low</option>
+                                                <option value="Medium">Medium</option>
+                                                <option value="High">High</option>
+                                            </select>
+                                        </div>
+                                        <div className="col-12 col-md-6">
+                                            <label className="form-label" htmlFor={`modal-status-${focusedTask.id}`}>Status</label>
+                                            <select
+                                                id={`modal-status-${focusedTask.id}`}
+                                                className="form-select"
+                                                value={editStatus}
+                                                onChange={(e) => setEditStatus(e.target.value as TaskStatus)}
+                                            >
+                                                <option value="To Do">To Do</option>
+                                                <option value="In Progress">In Progress</option>
+                                                <option value="Completed">Completed</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="d-flex flex-wrap gap-2 justify-content-between">
+                                        <button
+                                            type="button"
+                                            className="btn btn-success"
+                                            onClick={() => saveTaskEdits(focusedTask.id)}
+                                        >
+                                            Save changes
+                                        </button>
+                                        <div className="d-flex flex-wrap gap-2">
+                                            <button type="button" className="btn btn-outline-secondary" onClick={cancelEditingTask}>
+                                                Cancel edit
+                                            </button>
+                                            <button type="button" className="btn btn-outline-danger" onClick={() => {
+                                                deleteTask(focusedTask.id);
+                                                closeTaskDetails();
+                                            }}>
+                                                Delete task
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="d-flex flex-wrap gap-2 mb-4">
+                                        <span className={`badge rounded-pill ${priorityClasses[focusedTask.priority] || "bg-secondary-subtle text-secondary-emphasis"}`}>
+                                            {focusedTask.priority}
+                                        </span>
+                                        <span className="badge rounded-pill bg-primary-subtle text-primary-emphasis">
+                                            {focusedTask.status}
+                                        </span>
+                                    </div>
+
+                                    <div className="card border-0 bg-body-tertiary mb-4">
+                                        <div className="card-body p-4">
+                                            <p className="section-label mb-2">Description</p>
+                                            <p className="mb-0 text-body-secondary">
+                                                {focusedTask.description || "No description added."}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="d-flex flex-wrap gap-2">
+                                        <button type="button" className="btn btn-primary" onClick={() => startEditingTask(focusedTask.id)}>
+                                            Edit task
+                                        </button>
+                                        <div className="btn-group" role="group" aria-label="Quick status changes">
+                                            <button type="button" className="btn btn-outline-secondary" onClick={() => setTaskStatus(focusedTask.id, "To Do") }>
+                                                To Do
+                                            </button>
+                                            <button type="button" className="btn btn-outline-secondary" onClick={() => setTaskStatus(focusedTask.id, "In Progress") }>
+                                                In Progress
+                                            </button>
+                                            <button type="button" className="btn btn-outline-secondary" onClick={() => setTaskStatus(focusedTask.id, "Completed") }>
+                                                Completed
+                                            </button>
+                                        </div>
+                                        <button type="button" className="btn btn-outline-danger ms-auto" onClick={() => {
+                                            deleteTask(focusedTask.id);
+                                            closeTaskDetails();
+                                        }}>
+                                            Delete task
+                                        </button>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            ) : null}
         </section>
     )
 }

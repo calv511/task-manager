@@ -41,6 +41,13 @@
 	color: #5c677d;
 }
 
+.task-details-hero {
+	overflow: hidden;
+	background:
+		linear-gradient(135deg, rgba(13, 110, 253, 0.12), rgba(32, 201, 151, 0.12)),
+		#ffffff;
+}
+
 .task-grid {
 	display: grid;
 	gap: 1rem;
@@ -52,6 +59,29 @@
 
 .task-card:hover {
 	transform: translateY(-2px);
+}
+
+.task-card:focus-visible {
+	outline: 3px solid rgba(13, 110, 253, 0.35);
+	outline-offset: 2px;
+}
+
+.task-modal-backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: 1050;
+	display: grid;
+	place-items: center;
+	padding: 1rem;
+	background: rgba(15, 23, 42, 0.58);
+	backdrop-filter: blur(6px);
+}
+
+.task-modal {
+	width: min(100%, 820px);
+	max-height: calc(100vh - 2rem);
+	overflow: auto;
+	border-radius: 1.5rem;
 }
 
 .task-filters .btn {
