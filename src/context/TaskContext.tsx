@@ -1,10 +1,12 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState } from "react";
-import type { Task, NewTask } from "../types/task";
+import type { Task, NewTask, TaskStatus } from "../types/task";
 
 export interface TaskContextType {
     tasks: Task[];
     addTask: (taskData: NewTask) => void;
     updateTask: (id: number, updates: Partial<Task>) => void;
+    setTaskStatus: (id: number, status: TaskStatus) => void;
     deleteTask: (id: number) => void;
 }
 
@@ -42,12 +44,20 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
             );
         }; 
 
+    const setTaskStatus = (id: number, status: TaskStatus) => {
+        setTasks(prevTasks =>
+            prevTasks.map(task =>
+                task.id === id ? { ...task, status } : task
+            )
+        );
+    }
+
     const deleteTask = (id: number) => {
         setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
     }
 
     return (
-        <TaskContext.Provider value={{ tasks, addTask, updateTask, deleteTask }}>
+        <TaskContext.Provider value={{ tasks, addTask, updateTask, setTaskStatus, deleteTask }}>
             {children}
         </TaskContext.Provider>
     )
