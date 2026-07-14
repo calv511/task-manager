@@ -5,17 +5,23 @@
 .home-hero {
 	overflow: hidden;
 	background:
-		linear-gradient(135deg, rgba(13, 110, 253, 0.12), rgba(32, 201, 151, 0.12)),
-		#ffffff;
+		linear-gradient(135deg, rgba(56, 189, 248, 0.18), rgba(99, 102, 241, 0.24)),
+		#101a2e;
+	color: #f8fafc;
 }
 
 .config-callout {
 	border-radius: 1rem;
+	background: rgba(15, 23, 42, 0.72);
+	color: #f8fafc;
 }
 
 .auth-card,
 .feature-card {
 	border-radius: 1.25rem;
+	background: rgba(15, 23, 42, 0.8);
+	color: #f8fafc;
+	border: 1px solid rgba(148, 163, 184, 0.16);
 }
 
 .brand-mark {
@@ -25,7 +31,7 @@
 	width: 2.25rem;
 	height: 2.25rem;
 	border-radius: 0.75rem;
-	background: #1d2433;
+	background: linear-gradient(135deg, #38bdf8, #6366f1);
 	color: #ffffff;
 	font-size: 0.8rem;
 	font-weight: 700;
@@ -38,14 +44,15 @@
 	letter-spacing: 0.14em;
 	font-size: 0.75rem;
 	font-weight: 700;
-	color: #5c677d;
+	color: #93c5fd;
 }
 
 .task-details-hero {
 	overflow: hidden;
 	background:
-		linear-gradient(135deg, rgba(13, 110, 253, 0.12), rgba(32, 201, 151, 0.12)),
-		#ffffff;
+		linear-gradient(135deg, rgba(56, 189, 248, 0.18), rgba(99, 102, 241, 0.24)),
+		#101a2e;
+	color: #f8fafc;
 }
 
 .task-grid {
@@ -55,14 +62,18 @@
 
 .task-card {
 	transition: transform 0.15s ease, box-shadow 0.15s ease;
+	background: rgba(15, 23, 42, 0.8);
+	color: #f8fafc;
+	border: 1px solid rgba(148, 163, 184, 0.16);
 }
 
 .task-card:hover {
 	transform: translateY(-2px);
+	box-shadow: 0 1rem 2rem rgba(2, 6, 23, 0.35) !important;
 }
 
 .task-card:focus-visible {
-	outline: 3px solid rgba(13, 110, 253, 0.35);
+	outline: 3px solid rgba(96, 165, 250, 0.5);
 	outline-offset: 2px;
 }
 
@@ -73,8 +84,8 @@
 	display: grid;
 	place-items: center;
 	padding: 1rem;
-	background: rgba(15, 23, 42, 0.58);
-	backdrop-filter: blur(6px);
+	background: rgba(2, 6, 23, 0.7);
+	backdrop-filter: blur(8px);
 }
 
 .task-modal {
@@ -82,10 +93,102 @@
 	max-height: calc(100vh - 2rem);
 	overflow: auto;
 	border-radius: 1.5rem;
+	background: #101a2e;
+	color: #f8fafc;
+	border: 1px solid rgba(148, 163, 184, 0.18);
 }
 
 .task-filters .btn {
 	white-space: nowrap;
+}
+
+.btn-primary {
+	--bs-btn-color: #ffffff;
+	--bs-btn-bg: #2563eb;
+	--bs-btn-border-color: #2563eb;
+	--bs-btn-hover-bg: #1d4ed8;
+	--bs-btn-hover-border-color: #1d4ed8;
+	--bs-btn-active-bg: #1e40af;
+	--bs-btn-active-border-color: #1e40af;
+}
+
+.btn-outline-secondary {
+	--bs-btn-color: #f8fafc;
+	--bs-btn-border-color: rgba(248, 250, 252, 0.34);
+	--bs-btn-hover-bg: rgba(248, 250, 252, 0.12);
+	--bs-btn-hover-border-color: rgba(248, 250, 252, 0.6);
+	--bs-btn-hover-color: #ffffff;
+	--bs-btn-active-bg: rgba(248, 250, 252, 0.16);
+	--bs-btn-active-border-color: rgba(248, 250, 252, 0.7);
+	--bs-btn-active-color: #ffffff;
+	--bs-btn-disabled-color: rgba(248, 250, 252, 0.42);
+}
+
+.btn-outline-dark {
+	--bs-btn-color: #f8fafc;
+	--bs-btn-border-color: rgba(148, 163, 184, 0.32);
+	--bs-btn-hover-bg: rgba(148, 163, 184, 0.14);
+	--bs-btn-hover-border-color: rgba(148, 163, 184, 0.5);
+	--bs-btn-hover-color: #ffffff;
+	--bs-btn-active-bg: rgba(148, 163, 184, 0.18);
+	--bs-btn-active-border-color: rgba(148, 163, 184, 0.56);
+	--bs-btn-active-color: #ffffff;
+}
+
+.btn-dark {
+	--bs-btn-bg: #1e293b;
+	--bs-btn-border-color: #334155;
+	--bs-btn-hover-bg: #334155;
+	--bs-btn-hover-border-color: #475569;
+	--bs-btn-color: #f8fafc;
+}
+
+.badge {
+	color: #ffffff !important;
+}
+
+.bg-primary-subtle,
+.bg-success-subtle,
+.bg-warning-subtle,
+.bg-danger-subtle,
+.bg-dark-subtle {
+	background-color: rgba(148, 163, 184, 0.18) !important;
+	color: #f8fafc !important;
+}
+
+.text-body-secondary {
+	color: rgba(248, 250, 252, 0.72) !important;
+}
+
+.form-control,
+.form-select {
+	background-color: rgba(15, 23, 42, 0.78);
+	color: #f8fafc;
+	border-color: rgba(148, 163, 184, 0.24);
+}
+
+.form-control:focus,
+.form-select:focus {
+	background-color: rgba(15, 23, 42, 0.92);
+	color: #ffffff;
+	border-color: #60a5fa;
+	box-shadow: 0 0 0 0.2rem rgba(96, 165, 250, 0.18);
+}
+
+.form-control::placeholder {
+	color: rgba(226, 232, 240, 0.48);
+}
+
+.form-label,
+.form-check-label,
+.btn-close {
+	color: #f8fafc;
+}
+
+.alert-danger {
+	background: rgba(127, 29, 29, 0.32);
+	color: #fecaca;
+	border-color: rgba(248, 113, 113, 0.3);
 }
 
 @media (max-width: 767.98px) {

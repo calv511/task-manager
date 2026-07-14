@@ -166,9 +166,6 @@ function HomePage() {
                                                 <button type="button" className="btn btn-outline-dark" onClick={handleGoogleLogin}>
                                                     Continue with Google
                                                 </button>
-                                                <p className="text-body-secondary small mb-0">
-                                                    Registration will open the Auth0 hosted signup experience, so you do not need to build a custom password form yet.
-                                                </p>
                                             </div>
                                         )}
 
