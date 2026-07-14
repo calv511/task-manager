@@ -9,6 +9,10 @@
 		#ffffff;
 }
 
+.config-callout {
+	border-radius: 1rem;
+}
+
 .auth-card,
 .feature-card {
 	border-radius: 1.25rem;
@@ -35,4 +39,31 @@
 	font-size: 0.75rem;
 	font-weight: 700;
 	color: #5c677d;
+}
+
+.task-grid {
+	display: grid;
+	gap: 1rem;
+}
+
+.task-card {
+	transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.task-card:hover {
+	transform: translateY(-2px);
+}
+
+.task-filters .btn {
+	white-space: nowrap;
+}
+
+@media (max-width: 767.98px) {
+	.task-filters {
+		width: 100%;
+	}
+
+	.task-filters .btn {
+		flex: 1 1 auto;
+	}
 }
