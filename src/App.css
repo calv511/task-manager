@@ -1,10 +1,31 @@
-.app-shell {
+.home-shell {
 	min-height: 100vh;
 }
 
-.hero-panel {
+.home-hero {
 	overflow: hidden;
-	background: linear-gradient(135deg, rgba(13, 110, 253, 0.12), rgba(32, 201, 151, 0.12));
+	background:
+		linear-gradient(135deg, rgba(13, 110, 253, 0.12), rgba(32, 201, 151, 0.12)),
+		#ffffff;
+}
+
+.auth-card,
+.feature-card {
+	border-radius: 1.25rem;
+}
+
+.brand-mark {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.25rem;
+	height: 2.25rem;
+	border-radius: 0.75rem;
+	background: #1d2433;
+	color: #ffffff;
+	font-size: 0.8rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
 }
 
 .section-label {
@@ -14,38 +35,4 @@
 	font-size: 0.75rem;
 	font-weight: 700;
 	color: #5c677d;
-}
-
-.add-task-form,
-.task-board,
-.task-card,
-.empty-state {
-	border-radius: 1.25rem;
-}
-
-.task-grid {
-	display: grid;
-	gap: 1rem;
-}
-
-.task-card {
-	transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.task-card:hover {
-	transform: translateY(-2px);
-}
-
-.task-filters .btn {
-	white-space: nowrap;
-}
-
-@media (max-width: 767.98px) {
-	.task-filters {
-		width: 100%;
-	}
-
-	.task-filters .btn {
-		flex: 1 1 auto;
-	}
 }
