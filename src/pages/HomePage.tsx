@@ -40,7 +40,6 @@ function HomePage() {
 
     if (isAuthenticated) {
         const displayName = user?.name || user?.nickname || user?.email || "Welcome";
-        const roles = user?.["https://task-manager.app/roles"] ?? [];
 
         return (
             <main className="home-shell">
@@ -67,17 +66,6 @@ function HomePage() {
                                     >
                                         Log out
                                     </button>
-                                    {roles.length > 0 ? (
-                                        <div className="d-flex flex-wrap gap-2 justify-content-md-end">
-                                            {roles.map((role) => (
-                                                <span key={role} className="badge rounded-pill bg-dark-subtle text-dark-emphasis">
-                                                    {role}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <span className="text-body-secondary small">No custom roles claim detected yet.</span>
-                                    )}
                                 </div>
                             </div>
                         </div>
@@ -217,9 +205,9 @@ function HomePage() {
                         <div className="col-12 col-md-4">
                             <div className="feature-card card h-100 border-0 shadow-sm">
                                 <div className="card-body p-4">
-                                    <p className="section-label mb-2">Authorization</p>
-                                    <h2 className="h5 fw-semibold mb-2">Ready for roles</h2>
-                                        <p className="text-body-secondary mb-0">User claims are typed, so roles and permissions can be used for protected features later.</p>
+                                    <p className="section-label mb-2">Access</p>
+                                    <h2 className="h5 fw-semibold mb-2">Ready for protected features</h2>
+                                        <p className="text-body-secondary mb-0">Authenticated access is ready for future protected routes and app-specific access controls.</p>
                                 </div>
                             </div>
                         </div>
