@@ -166,6 +166,9 @@ function HomePage() {
                                                     <a className="link-secondary small" href="#auth-panel">Forgot password?</a>
                                                 </div>
                                                 <button type="submit" className="btn btn-primary btn-lg">Sign in</button>
+                                                <button type="button" className="btn btn-outline-dark btn-lg" onClick={handleGoogleLogin}>
+                                                    Continue with Google
+                                                </button>
                                             </form>
                                         ) : (
                                             <div className="d-grid gap-3">
