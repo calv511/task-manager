@@ -8,4 +8,4 @@ export interface Task {
     priority: TaskPriority;
 }
 
-export type NewTask = Omit<Task, 'id'>;
+export type NewTask = Omit<Task, 'id' | 'status'>;
