@@ -1,6 +1,21 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState } from "react";
+import { createContext, useEffect, useContext, useState } from "react";
 import type { Task, NewTask, TaskStatus } from "../types/task";
+
+const TASKS_STORAGE_KEY = "task-manager.tasks";
+
+const loadTasksFromStorage = () => {
+    if (typeof window === "undefined") {
+        return [] as Task[];
+    }
+
+    try {
+        const storedTasks = window.localStorage.getItem(TASKS_STORAGE_KEY);
+        return storedTasks ? JSON.parse(storedTasks) as Task[] : [];
+    } catch {
+        return [] as Task[];
+    }
+};
 
 export interface TaskContextType {
     tasks: Task[];
@@ -23,9 +38,11 @@ export const useTasks = () => {
 }
 
 export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
-    const [tasks, setTasks] = useState<Task[]>([]);
+    const [tasks, setTasks] = useState<Task[]>(loadTasksFromStorage);
 
-    // ... CRUD functions (addTask, updateTask, deleteTask)
+    useEffect(() => {
+        window.localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
+    }, [tasks]);
 
     const addTask = (formValues: NewTask) => {
         const newTask: Task = {
