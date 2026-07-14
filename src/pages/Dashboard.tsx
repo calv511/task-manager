@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTasks } from "../context/TaskContext";
 import type { TaskPriority, TaskStatus } from "../types/task";
+import { validateTaskForm, type TaskFormErrors } from "../utils/taskValidation";
 
 function Dashboard() {
     const { tasks, deleteTask, updateTask, setTaskStatus } = useTasks();
@@ -10,6 +11,8 @@ function Dashboard() {
     const [editDescription, setEditDescription] = useState("");
     const [editPriority, setEditPriority] = useState<TaskPriority>("Medium");
     const [editStatus, setEditStatus] = useState<TaskStatus>("To Do");
+    const [editErrors, setEditErrors] = useState<TaskFormErrors>({});
+    const [editSubmitError, setEditSubmitError] = useState("");
     const [focusedTaskId, setFocusedTaskId] = useState<number | null>(null);
     const filteredTasks = tasks.filter(
         task => filter === "All" || task.status === filter
@@ -39,6 +42,8 @@ function Dashboard() {
         setEditDescription(taskToEdit.description || "");
         setEditPriority(taskToEdit.priority);
         setEditStatus(taskToEdit.status);
+        setEditErrors({});
+        setEditSubmitError("");
     };
 
     const cancelEditingTask = useCallback(() => {
@@ -47,6 +52,8 @@ function Dashboard() {
         setEditDescription("");
         setEditPriority("Medium");
         setEditStatus("To Do");
+        setEditErrors({});
+        setEditSubmitError("");
     }, []);
 
     const openTaskDetails = (taskId: number) => {
@@ -72,13 +79,31 @@ function Dashboard() {
     }, [closeTaskDetails]);
 
     const saveTaskEdits = (taskId: number) => {
-        updateTask(taskId, {
-            title: editTitle.trim(),
-            description: editDescription.trim(),
+        const nextErrors = validateTaskForm({
+            title: editTitle,
+            description: editDescription,
             priority: editPriority,
             status: editStatus,
         });
-        cancelEditingTask();
+
+        setEditErrors(nextErrors);
+        setEditSubmitError("");
+
+        if (Object.keys(nextErrors).length > 0) {
+            return;
+        }
+
+        try {
+            updateTask(taskId, {
+                title: editTitle.trim(),
+                description: editDescription.trim(),
+                priority: editPriority,
+                status: editStatus,
+            });
+            cancelEditingTask();
+        } catch {
+            setEditSubmitError("Something went wrong while saving the task. Please try again.");
+        }
     };
 
     return (
@@ -135,51 +160,75 @@ function Dashboard() {
                                     <div className="d-flex justify-content-between align-items-start gap-3 mb-3">
                                         <div>
                                             {editingTaskId === task.id ? (
-                                                <div className="d-grid gap-3" onClickCapture={(event) => event.stopPropagation()}>
+                                                    <div className="d-grid gap-3" onClickCapture={(event) => event.stopPropagation()}>
                                                     <div>
                                                         <label className="form-label" htmlFor={`edit-title-${task.id}`}>Title</label>
                                                         <input
                                                             id={`edit-title-${task.id}`}
-                                                            className="form-control"
+                                                                className={`form-control ${editErrors.title ? "is-invalid" : ""}`}
                                                             value={editTitle}
-                                                            onChange={(e) => setEditTitle(e.target.value)}
+                                                                onChange={(e) => {
+                                                                    setEditTitle(e.target.value);
+                                                                    if (editErrors.title) {
+                                                                        setEditErrors((currentErrors) => ({ ...currentErrors, title: undefined }));
+                                                                    }
+                                                                }}
                                                         />
+                                                            {editErrors.title ? <div className="invalid-feedback d-block">{editErrors.title}</div> : null}
                                                     </div>
                                                     <div>
                                                         <label className="form-label" htmlFor={`edit-description-${task.id}`}>Description</label>
                                                         <textarea
                                                             id={`edit-description-${task.id}`}
-                                                            className="form-control"
+                                                                className={`form-control ${editErrors.description ? "is-invalid" : ""}`}
                                                             rows={3}
                                                             value={editDescription}
-                                                            onChange={(e) => setEditDescription(e.target.value)}
+                                                                onChange={(e) => {
+                                                                    setEditDescription(e.target.value);
+                                                                    if (editErrors.description) {
+                                                                        setEditErrors((currentErrors) => ({ ...currentErrors, description: undefined }));
+                                                                    }
+                                                                }}
                                                         />
+                                                            {editErrors.description ? <div className="invalid-feedback d-block">{editErrors.description}</div> : null}
                                                     </div>
                                                     <div>
                                                         <label className="form-label" htmlFor={`edit-priority-${task.id}`}>Priority</label>
                                                         <select
                                                             id={`edit-priority-${task.id}`}
-                                                            className="form-select"
+                                                                className={`form-select ${editErrors.priority ? "is-invalid" : ""}`}
                                                             value={editPriority}
-                                                            onChange={(e) => setEditPriority(e.target.value as TaskPriority)}
+                                                                onChange={(e) => {
+                                                                    setEditPriority(e.target.value as TaskPriority);
+                                                                    if (editErrors.priority) {
+                                                                        setEditErrors((currentErrors) => ({ ...currentErrors, priority: undefined }));
+                                                                    }
+                                                                }}
                                                         >
                                                             <option value="Low">Low</option>
                                                             <option value="Medium">Medium</option>
                                                             <option value="High">High</option>
                                                         </select>
+                                                            {editErrors.priority ? <div className="invalid-feedback d-block">{editErrors.priority}</div> : null}
                                                     </div>
                                                     <div>
                                                         <label className="form-label" htmlFor={`edit-status-${task.id}`}>Status</label>
                                                         <select
                                                             id={`edit-status-${task.id}`}
-                                                            className="form-select"
+                                                                className={`form-select ${editErrors.status ? "is-invalid" : ""}`}
                                                             value={editStatus}
-                                                            onChange={(e) => setEditStatus(e.target.value as TaskStatus)}
+                                                                onChange={(e) => {
+                                                                    setEditStatus(e.target.value as TaskStatus);
+                                                                    if (editErrors.status) {
+                                                                        setEditErrors((currentErrors) => ({ ...currentErrors, status: undefined }));
+                                                                    }
+                                                                }}
                                                         >
                                                             <option value="To Do">To Do</option>
                                                             <option value="In Progress">In Progress</option>
                                                             <option value="Completed">Completed</option>
                                                         </select>
+                                                            {editErrors.status ? <div className="invalid-feedback d-block">{editErrors.status}</div> : null}
                                                     </div>
                                                 </div>
                                             ) : (
@@ -296,49 +345,74 @@ function Dashboard() {
                                         <label className="form-label" htmlFor={`modal-title-${focusedTask.id}`}>Title</label>
                                         <input
                                             id={`modal-title-${focusedTask.id}`}
-                                            className="form-control"
+                                            className={`form-control ${editErrors.title ? "is-invalid" : ""}`}
                                             value={editTitle}
-                                            onChange={(e) => setEditTitle(e.target.value)}
+                                            onChange={(e) => {
+                                                setEditTitle(e.target.value);
+                                                if (editErrors.title) {
+                                                    setEditErrors((currentErrors) => ({ ...currentErrors, title: undefined }));
+                                                }
+                                            }}
                                         />
+                                        {editErrors.title ? <div className="invalid-feedback d-block">{editErrors.title}</div> : null}
                                     </div>
                                     <div>
                                         <label className="form-label" htmlFor={`modal-description-${focusedTask.id}`}>Description</label>
                                         <textarea
                                             id={`modal-description-${focusedTask.id}`}
-                                            className="form-control"
+                                            className={`form-control ${editErrors.description ? "is-invalid" : ""}`}
                                             rows={4}
                                             value={editDescription}
-                                            onChange={(e) => setEditDescription(e.target.value)}
+                                            onChange={(e) => {
+                                                setEditDescription(e.target.value);
+                                                if (editErrors.description) {
+                                                    setEditErrors((currentErrors) => ({ ...currentErrors, description: undefined }));
+                                                }
+                                            }}
                                         />
+                                        {editErrors.description ? <div className="invalid-feedback d-block">{editErrors.description}</div> : null}
                                     </div>
                                     <div className="row g-3">
                                         <div className="col-12 col-md-6">
                                             <label className="form-label" htmlFor={`modal-priority-${focusedTask.id}`}>Priority</label>
                                             <select
                                                 id={`modal-priority-${focusedTask.id}`}
-                                                className="form-select"
+                                                className={`form-select ${editErrors.priority ? "is-invalid" : ""}`}
                                                 value={editPriority}
-                                                onChange={(e) => setEditPriority(e.target.value as TaskPriority)}
+                                                onChange={(e) => {
+                                                    setEditPriority(e.target.value as TaskPriority);
+                                                    if (editErrors.priority) {
+                                                        setEditErrors((currentErrors) => ({ ...currentErrors, priority: undefined }));
+                                                    }
+                                                }}
                                             >
                                                 <option value="Low">Low</option>
                                                 <option value="Medium">Medium</option>
                                                 <option value="High">High</option>
                                             </select>
+                                            {editErrors.priority ? <div className="invalid-feedback d-block">{editErrors.priority}</div> : null}
                                         </div>
                                         <div className="col-12 col-md-6">
                                             <label className="form-label" htmlFor={`modal-status-${focusedTask.id}`}>Status</label>
                                             <select
                                                 id={`modal-status-${focusedTask.id}`}
-                                                className="form-select"
+                                                className={`form-select ${editErrors.status ? "is-invalid" : ""}`}
                                                 value={editStatus}
-                                                onChange={(e) => setEditStatus(e.target.value as TaskStatus)}
+                                                onChange={(e) => {
+                                                    setEditStatus(e.target.value as TaskStatus);
+                                                    if (editErrors.status) {
+                                                        setEditErrors((currentErrors) => ({ ...currentErrors, status: undefined }));
+                                                    }
+                                                }}
                                             >
                                                 <option value="To Do">To Do</option>
                                                 <option value="In Progress">In Progress</option>
                                                 <option value="Completed">Completed</option>
                                             </select>
+                                            {editErrors.status ? <div className="invalid-feedback d-block">{editErrors.status}</div> : null}
                                         </div>
                                     </div>
+                                    {editSubmitError ? <div className="alert alert-danger py-2">{editSubmitError}</div> : null}
                                     <div className="d-flex flex-wrap gap-2 justify-content-between">
                                         <button
                                             type="button"
